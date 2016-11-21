@@ -1,6 +1,6 @@
 # A simple netfilter 
-# Dump 100000 packets from kernel skb_buff
-# Packet sort by source IP port 
+# Dump 100000 sk_buff packets information kernel 
+# Packet sort by  port 
 
 # Usage: $0 [-h] [--help] [-srcip] [-destip] [-protocol]
 # Version $SCRIPT_VERSION, by Riverwind Yeh
