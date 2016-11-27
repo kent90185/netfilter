@@ -1,4 +1,5 @@
 # A simple netfilter 
+# More than 2 cpu cores is prefered
 # Dump 100000 sk_buff packets information kernel 
 # Packet sort by  port 
 
