@@ -263,15 +263,6 @@ net_info_node *srcip_hash_find( unsigned int srcip )
     }
 }
 
-#ifndef NIPQUAD_FMT
-#define NIPQUAD_FMT "%u.%u.%u.%u"
-#define NIPQUAD(addr) \
-      ((unsigned char *)&addr)[0], \
-      ((unsigned char *)&addr)[1], \
-      ((unsigned char *)&addr)[2], \
-      ((unsigned char *)&addr)[3]
-#endif
-
 int srcip_bucket_check( void )
 {
     int i ;

@@ -27,6 +27,7 @@
 #include <linux/in.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
+#include <linux/spinlock.h>
 #include <linux/time.h>
 #include <linux/rtc.h>
 #include <linux/debugfs.h>
@@ -42,14 +43,6 @@
 #if IP_TEST
 #include "include/netfilter_srcip_hash.h"
 #include "include/netfilter_destip_hash.h"
-#endif
-#ifndef NIPQUAD_FMT
-#define NIPQUAD_FMT "%u.%u.%u.%u"
-#define NIPQUAD(addr) \
-     ((unsigned char *)&addr)[0], \
-     ((unsigned char *)&addr)[1], \
-     ((unsigned char *)&addr)[2], \
-     ((unsigned char *)&addr)[3]
 #endif
 
 /********** MUTEX **********/
@@ -108,20 +101,27 @@ static net_info_node *destip_search = NULL;
 /********************************************************************************/
 void my_hash_insert (struct work_struct *my_netinfo_job)
 {
+//	unsigned long flags;
 	net_info_node *netinfohash = container_of (my_netinfo_job, net_info_node, my_netinfo_job);
-//	printk ("[inqueue]netinfo_list_number = %u , %d\n", netinfo_list_number,__LINE__);
+    
+//	spin_lock_irqsave(&netinfohash->lock_, flags);
+	
 	srcip_hash_insert (netinfohash);
 	srcip_hash_search( netinfohash->src_ip );
 	destip_hash_insert (netinfohash);
 	destip_hash_search( netinfohash->dest_ip );
-
+	
+//	spin_unlock_irqrestore(&netinfohash->lock_, flags);	
 }
 
-static unsigned int hook_func ( const struct nf_hook_ops *ops,
+/*static unsigned int hook_func ( const struct nf_hook_ops *ops,
 			struct sk_buff *skb,
 			const struct net_device *in,
 			const struct net_device *out, 
-			int (*okfn) (struct sk_buff *) )
+			int (*okfn) (struct sk_buff *) )*/
+static unsigned int hook_func(void *priv,
+             struct sk_buff *skb,
+             const struct nf_hook_state *state)
 {
 	struct udphdr *udp_header;
 	struct tcphdr *tcp_header;
@@ -598,8 +598,7 @@ static int __init init_main (void)
     }
 #endif
   	
-	queue_for_insert_hash = create_workqueue ("my job: queue for insert hash");
-//	queue_for_sort_hash = create_workqueue ("my job: queue for sort hash");
+	queue_for_insert_hash = create_singlethread_workqueue ("my job: queue for insert hash");
 
 
   /* hook NF_INET_PRE_ROUTING */
