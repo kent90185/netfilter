@@ -76,7 +76,7 @@ static struct nf_hook_ops nfho;
 
 /**************memory array*******************/
 
-#define MAX_LIST_NUMBER 100000
+#define MAX_LIST_NUMBER 10000
 net_info_node netinfo_list[MAX_LIST_NUMBER];
 static unsigned int netinfo_list_number = 0;
 /*******************************work queue init******************************************/
@@ -101,17 +101,17 @@ static net_info_node *destip_search = NULL;
 /********************************************************************************/
 void my_hash_insert (struct work_struct *my_netinfo_job)
 {
-//	unsigned long flags;
+	unsigned long flags;
 	net_info_node *netinfohash = container_of (my_netinfo_job, net_info_node, my_netinfo_job);
     
-//	spin_lock_irqsave(&netinfohash->lock_, flags);
+	spin_lock_irqsave(&netinfohash->lock_, flags);
 	
 	srcip_hash_insert (netinfohash);
-	srcip_hash_search( netinfohash->src_ip );
+//	srcip_hash_search( netinfohash->src_ip );
 	destip_hash_insert (netinfohash);
-	destip_hash_search( netinfohash->dest_ip );
+//	destip_hash_search( netinfohash->dest_ip );
 	
-//	spin_unlock_irqrestore(&netinfohash->lock_, flags);	
+	spin_unlock_irqrestore(&netinfohash->lock_, flags);	
 }
 
 /*static unsigned int hook_func ( const struct nf_hook_ops *ops,
@@ -359,6 +359,7 @@ srcip_write (struct file *file, const char __user * ubuf, size_t len, loff_t * p
   	printk ("srcip input = %s\n", srcip_type);
   	printk ("srcip_type = %u\n", srcip_tag);
 
+    srcip_hash_search( srcip_tag );
   	srcip_search = srcip_hash_find (srcip_tag);
   	return len;
 }
@@ -455,7 +456,8 @@ static ssize_t destip_write(struct file *file, const char __user * ubuf, size_t 
   	printk ("destip input = %s\n", destip_type);
   	printk ("destip_type = %u\n", destip_tag);
 
-  	destip_search = destip_hash_find (destip_tag);
+	destip_hash_search( destip_tag );
+	destip_search = destip_hash_find (destip_tag);
   	return len;
 }
 
@@ -615,6 +617,7 @@ static int __init init_main (void)
   	srcip_hash_init ();
   	destip_hash_init ();
 #endif
+//	INIT_WORK (&(my_netinfo_current->my_netinfo_job), my_hash_insert);
   	return 0;
 }
 

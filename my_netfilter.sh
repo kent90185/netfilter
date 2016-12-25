@@ -32,7 +32,7 @@ function parse_ip()
         [[ ${input_ip[0]} -le 255 && ${input_ip[1]} -le 255 \
             && ${input_ip[2]} -le 255 && ${input_ip[3]} -le 255 ]]
         valid=$?
-    fi  
+    fi 
     return $valid
 }
 
