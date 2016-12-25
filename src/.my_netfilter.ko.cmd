@@ -1,1 +1,0 @@
-cmd_/home/riverwind/1120/src/my_netfilter.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/riverwind/1120/src/my_netfilter.ko /home/riverwind/1120/src/my_netfilter.o /home/riverwind/1120/src/my_netfilter.mod.o
