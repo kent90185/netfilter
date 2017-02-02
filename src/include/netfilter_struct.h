@@ -36,8 +36,6 @@ typedef struct netinfo
     struct netinfo *destip_next_same;
     struct netinfo *destip_next_diff;
 
-    spinlock_t lock_;
-
 /* workqueue struct */
     struct work_struct my_netinfo_job;
 //    struct work_struct my_sort_job;

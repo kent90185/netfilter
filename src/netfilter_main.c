@@ -101,17 +101,14 @@ static net_info_node *destip_search = NULL;
 /********************************************************************************/
 void my_hash_insert (struct work_struct *my_netinfo_job)
 {
-	unsigned long flags;
-	net_info_node *netinfohash = container_of (my_netinfo_job, net_info_node, my_netinfo_job);
-    
-	spin_lock_irqsave(&netinfohash->lock_, flags);
-	
+	net_info_node *netinfohash = container_of (my_netinfo_job, net_info_node, my_netinfo_job)    ;
+	mutex_lock(&lock1);
 	srcip_hash_insert (netinfohash);
 //	srcip_hash_search( netinfohash->src_ip );
 	destip_hash_insert (netinfohash);
 //	destip_hash_search( netinfohash->dest_ip );
-	
-	spin_unlock_irqrestore(&netinfohash->lock_, flags);	
+
+	mutex_unlock(&lock1);
 }
 
 /*static unsigned int hook_func ( const struct nf_hook_ops *ops,
@@ -617,7 +614,6 @@ static int __init init_main (void)
   	srcip_hash_init ();
   	destip_hash_init ();
 #endif
-//	INIT_WORK (&(my_netinfo_current->my_netinfo_job), my_hash_insert);
   	return 0;
 }
 
